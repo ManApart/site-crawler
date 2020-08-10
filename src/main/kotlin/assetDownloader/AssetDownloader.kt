@@ -7,23 +7,20 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files.copy
 import java.nio.file.StandardCopyOption
 import java.util.*
-
+import kotlinx.coroutines.*
 
 const val MAX_DEPTH = 1000
+const val CHUNK_SIZE = 3
 
 fun main() {
     val fetcher = XboxScreenShotDownloader("iceburg-33308")
     val assetInfos = crawl(fetcher, fetcher.baseUrl())
     println("Found ${assetInfos.size} assets.")
 
-    //download single asset
-    val info = assetInfos.first()
-    download(info)
-
-//    fetcher.getAssetInfos(url, data).forEach {
-//        download(it)
-//    }
-
+    val totalChunks = assetInfos.size/ CHUNK_SIZE
+    assetInfos.chunked(CHUNK_SIZE).withIndex().forEach {
+        downloadChunk(it.value, it.index, totalChunks)
+    }
 }
 
 fun crawl(fetcher: AssetPageFetcher, url: String, depth: Int = 0): List<AssetInfo> {
@@ -60,6 +57,16 @@ fun fetchData(url: String): String {
 
 }
 
+fun downloadChunk(infos: List<AssetInfo>, i: Int, totalChunks: Int) {
+    println("Downloading chunk $i/$totalChunks")
+    runBlocking {
+        infos.forEach {
+            async {
+                download(it)
+            }
+        }
+    }
+}
 
 private fun download(info: AssetInfo) {
     val connection: URLConnection = URL(info.url).openConnection()
@@ -73,5 +80,4 @@ private fun download(info: AssetInfo) {
     val file = File(info.fileName)
     copy(connection.getInputStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-    println("Downloaded ${info.fileName}")
 }
