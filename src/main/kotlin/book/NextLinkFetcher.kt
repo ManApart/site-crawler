@@ -1,3 +1,5 @@
+package book
+
 class NextLinkFetcher : PageFetcher {
     val matchText = "<link rel=\"next\" href=\""
 
