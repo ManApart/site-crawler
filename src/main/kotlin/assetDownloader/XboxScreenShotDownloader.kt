@@ -1,39 +1,69 @@
 package assetDownloader
 
-//https://xboxclips.co/iceburg-33308/screenshots
-//https://xboxclips.co/iceburg-33308/screenshots/54e96eb8-7b9d-401b-9cb0-df74fcda36e4
-//https://screenshotscontent-t3002.xboxlive.com/xuid-2533274911938188-public/54e96eb8-7b9d-401b-9cb0-df74fcda36e4_Thumbnail.PNG
-//https://screenshotscontent-t2001.xboxlive.com/xuid-2533274911938188-public/727d6571-f8dc-4c2b-9199-f7d74b6924ea_Thumbnail.PNG
-
+//https://gamerdvr.com/gamer/iceburg-33308/screenshots?page=1
+//https://gamerdvr.com/gamer/iceburg-33308/screenshot/18012598
+//https://gamerdvr.com/gamer/iceburg-33308/screenshot/60b40326-c9e1-4e7b-ad18-a7963dbddd8b/f8c8b756-05eb-4109-9a83-a44339684bd50
+//https://gamerdvr.com/xbox/load/screenshot/https%3A%2F%2Fscreenshotscontent-d3002.xboxlive.com%2Fxuid-2533274911938188-private%2F54e96eb8-7b9d-401b-9cb0-df74fcda36e4.PNG%3Fsv%3D2015-12-11%26sr%3Db%26si%3DDefaultAccess%26sig%3DxmmjGcW56sViLY%252FE1%252B21Gx5V1gDUUVJoGTE6Tm92b7Q%253D.png
 class XboxScreenShotDownloader(private val userName: String) : AssetPageFetcher {
-    private val downloadUrlLineStart = "<a href=\"/$userName/screenshots/"
-    private val assetUrlStart = "data-bg=\"url("
-    private val assetUrlEnd = ")"
+    private val nextUrlMatch = "<li class=\"next\"><a href=\"/gamer/$userName/screenshots?page="
+    private val nextPageNumberStart = "page="
+    private val nextPageNumberEnd = "\""
+    
+    private val innerPageUrlLineStart = "<a target=\"\" href=\"/gamer/$userName/screenshot/"
+    private val innerPageUrlStart = "href=\""
+    private val innerPageUrlEnd = "\""
+
+    private val assetDownloadUrlLineStart = "<a onClick=\"ga('send', 'event', 'Screenshot', 'action', 'Download');"
+    private val assetUrlStart = "href=\""
+    private val assetUrlEnd = "\""
 
     override fun baseUrl(): String {
-        return "https://xboxclips.co/$userName/screenshots"
+        return "https://gamerdvr.com/gamer/$userName/screenshots?page=1"
     }
 
     override fun hasNext(pageData: String): Boolean {
-        return false
+        return pageData.contains(nextUrlMatch)
     }
 
     override fun getNextUrl(pageData: String): String {
-        return ""
+        val line = pageData
+            .split("\n")
+            .first { it.startsWith(nextUrlMatch) }
+
+        val start = line.indexOf(nextPageNumberStart) + nextPageNumberStart.length
+        val end = line.indexOf(nextPageNumberEnd, start)
+        val pageNumber = line.substring(start, end)
+        return "https://gamerdvr.com/gamer/$userName/screenshots?page=$pageNumber"
     }
 
     override fun getAssetInfos(url: String, pageData: String): List<AssetInfo> {
         return pageData
             .split("\n")
-            .filter { it.startsWith(downloadUrlLineStart) }
-            .map { extractUrlFromLine(it) }
+            .filter { it.startsWith(innerPageUrlLineStart) }
+            .map { extractInfoFromLine(it) }
     }
 
-    private fun extractUrlFromLine(line: String): AssetInfo {
+    private fun extractInfoFromLine(line: String): AssetInfo {
+        val start = line.indexOf(innerPageUrlStart) + innerPageUrlStart.length
+        val end = line.indexOf(innerPageUrlEnd, start)
+        val urlToInnerPage = "https://gamerdvr.com" + line.substring(start, end)
+
+        val url = getRealUrl(urlToInnerPage)
+
+        val uniqueName = urlToInnerPage.substring(line.lastIndexOf("/") + 2)
+        val fileName = "./download/$uniqueName.png"
+        return AssetInfo(url, fileName)
+    }
+
+    private fun getRealUrl(urlToInnerPage: String): String {
+        val pageData = fetchData(urlToInnerPage)
+
+        val line = pageData
+            .split("\n")
+            .first { it.startsWith(assetDownloadUrlLineStart) }
+
         val start = line.indexOf(assetUrlStart) + assetUrlStart.length
         val end = line.indexOf(assetUrlEnd, start)
-        val url = line.substring(start, end)
-        val fileName = "./download/abc.png"
-        return AssetInfo(url, fileName)
+        return line.substring(start, end)
     }
 }

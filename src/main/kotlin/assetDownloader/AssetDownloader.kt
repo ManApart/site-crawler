@@ -13,29 +13,35 @@ const val MAX_DEPTH = 1000
 
 fun main() {
     val fetcher = XboxScreenShotDownloader("iceburg-33308")
-    crawl(fetcher, fetcher.baseUrl())
-}
-
-fun crawl(fetcher: AssetPageFetcher, url: String, depth: Int = 0) {
-    val data = fetchData(url)
+    val assetInfos = crawl(fetcher, fetcher.baseUrl())
+    println("Found ${assetInfos.size} assets.")
 
     //download single asset
-    val info = fetcher.getAssetInfos(url, data).first()
+    val info = assetInfos.first()
     download(info)
 
 //    fetcher.getAssetInfos(url, data).forEach {
 //        download(it)
 //    }
 
+}
+
+fun crawl(fetcher: AssetPageFetcher, url: String, depth: Int = 0): List<AssetInfo> {
+    println("Finding assets at $url")
+    val data = fetchData(url)
+
+    val infos = fetcher.getAssetInfos(url, data)
+
     if (fetcher.hasNext(data) && depth < MAX_DEPTH) {
         val nextUrl = fetcher.getNextUrl(data)
         if (url != nextUrl) {
-            crawl(fetcher, nextUrl, depth + 1)
+            return infos + crawl(fetcher, nextUrl, depth + 1)
         }
     }
+    return infos
 }
 
-private fun fetchData(url: String): String {
+fun fetchData(url: String): String {
     val connection: URLConnection = URL(url).openConnection()
     //fake we're a browser for https
     connection.setRequestProperty(
