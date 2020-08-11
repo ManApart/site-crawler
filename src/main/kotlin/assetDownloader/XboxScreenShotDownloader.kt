@@ -8,7 +8,7 @@ class XboxScreenShotDownloader(private val userName: String) : AssetPageFetcher 
     private val nextUrlMatch = "<li class=\"next\"><a href=\"/gamer/$userName/screenshots?page="
     private val nextPageNumberStart = "page="
     private val nextPageNumberEnd = "\""
-    
+
     private val innerPageUrlLineStart = "<a target=\"\" href=\"/gamer/$userName/screenshot/"
     private val innerPageUrlStart = "href=\""
     private val innerPageUrlEnd = "\""
@@ -50,7 +50,7 @@ class XboxScreenShotDownloader(private val userName: String) : AssetPageFetcher 
 
         val url = getRealUrl(urlToInnerPage)
 
-        val uniqueName = urlToInnerPage.substring(line.lastIndexOf("/") + 2)
+        val uniqueName = urlToInnerPage.substring(urlToInnerPage.lastIndexOf("/") + 1)
         val fileName = "./download/$uniqueName.png"
         return AssetInfo(url, fileName)
     }

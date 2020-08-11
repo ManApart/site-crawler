@@ -13,9 +13,12 @@ const val MAX_DEPTH = 1000
 const val CHUNK_SIZE = 3
 
 fun main() {
-    val fetcher = XboxScreenShotDownloader("iceburg-33308")
+//    val fetcher = XboxScreenShotDownloader("iceburg-33308")
+    val fetcher = XboxClipDownloader("iceburg%2033308")
     val assetInfos = crawl(fetcher, fetcher.baseUrl())
     println("Found ${assetInfos.size} assets.")
+
+//    download(assetInfos.first())
 
     val totalChunks = assetInfos.size/ CHUNK_SIZE
     assetInfos.chunked(CHUNK_SIZE).withIndex().forEach {
@@ -80,4 +83,9 @@ private fun download(info: AssetInfo) {
     val file = File(info.fileName)
     copy(connection.getInputStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
+}
+
+
+fun String.makePipeSafe() : String {
+    return this.replace("|", "[")
 }
