@@ -1,7 +1,7 @@
 package book
 
-class NextLinkFetcher : PageFetcher {
-    val matchText = "<link rel=\"next\" href=\""
+class PhilosophyOfUnixFetcher : PageFetcher {
+    private val matchText = "<link rel=\"next\" href=\""
 
     override fun hasNext(pageData: String): Boolean {
         return pageData.contains(matchText)

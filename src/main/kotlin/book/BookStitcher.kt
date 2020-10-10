@@ -5,8 +5,8 @@ import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.*
 
-const val SITE_NAME = "Philosophy of Unix"
-const val SITE_URL = "http://www.catb.org/esr/writings/taoup/html/index.html"
+val book = PhilosophyOfUnix()
+
 const val MAX_DEPTH = 1000
 
 const val HEADER = "<html>\n" +
@@ -19,12 +19,12 @@ const val FOOTER = "</body>\n" +
 
 
 fun main(args: Array<String>) {
-    crawl(SITE_URL, NextLinkFetcher())
+    crawl(book.siteUrl, book.pageFetcher)
 }
 
 fun crawl(url: String, fetcher: PageFetcher, depth: Int = 0, pageList: MutableList<String> = mutableListOf(), previousData: String = "") {
     val data = fetchData(url)
-    val fileName = "$depth${url.substring(url.lastIndexOf("/") + 1)}"
+    val fileName = book.fileName(depth, url)
     val pathName = "./download/$fileName"
     saveData(pathName, data)
     pageList.add(fileName)
@@ -59,6 +59,6 @@ private fun createIndexPage(pageList: List<String>) {
     indexData += FOOTER
 
     println(indexData)
-    saveData("./download/$SITE_NAME.html", indexData)
+    saveData("./download/${book.siteName}.html", indexData)
 }
 
