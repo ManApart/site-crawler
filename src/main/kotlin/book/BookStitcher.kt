@@ -5,7 +5,7 @@ import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.*
 
-val book = PhilosophyOfUnix()
+val book: BookInfo = CathedralAndBazaar()
 
 const val MAX_DEPTH = 1000
 
@@ -24,7 +24,7 @@ fun main(args: Array<String>) {
 
 fun crawl(url: String, fetcher: PageFetcher, depth: Int = 0, pageList: MutableList<String> = mutableListOf(), previousData: String = "") {
     val data = fetchData(url)
-    val fileName = book.fileName(depth, url)
+    val fileName = ensureEndsInHTML(book.fileName(depth, url))
     val pathName = "./download/$fileName"
     saveData(pathName, data)
     pageList.add(fileName)
@@ -46,7 +46,7 @@ private fun fetchData(url: String): String {
 }
 
 private fun saveData(fileName: String, data: String) {
-    File(fileName).printWriter().use { out ->
+    File(fileName).also { it.parentFile.mkdirs() }.printWriter().use { out ->
         out.println(data)
     }
 }
@@ -60,5 +60,13 @@ private fun createIndexPage(pageList: List<String>) {
 
     println(indexData)
     saveData("./download/${book.siteName}.html", indexData)
+}
+
+private fun ensureEndsInHTML(fileName: String) : String {
+    return if (fileName.endsWith(".html")){
+        fileName
+    } else {
+        "$fileName.html"
+    }
 }
 
