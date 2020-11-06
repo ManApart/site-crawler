@@ -14,7 +14,8 @@ const val CHUNK_SIZE = 3
 
 fun main() {
 //    val fetcher = XboxScreenShotDownloader("iceburg-33308")
-    val fetcher = XboxClipDownloader("iceburg%2033308")
+//    val fetcher = XboxClipDownloader("iceburg%2033308")
+    val fetcher = MarioSpriteDownloader()
     val assetInfos = crawl(fetcher, fetcher.baseUrl())
     println("Found ${assetInfos.size} assets.")
 
