@@ -7,7 +7,7 @@ class MarioSpriteDownloader() : AssetPageFetcher {
     private val assetUrlEnd = "\""
 
     override fun baseUrl(): String {
-        return "http://www.mariouniverse.com/sprites-snes-yi/"
+        return "http://www.mariouniverse.com/maps-snes-yi/"
     }
 
     override fun hasNext(pageData: String): Boolean {

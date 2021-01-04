@@ -15,13 +15,13 @@ const val CHUNK_SIZE = 3
 fun main() {
 //    val fetcher = XboxScreenShotDownloader("iceburg-33308")
 //    val fetcher = XboxClipDownloader("iceburg%2033308")
-    val fetcher = MarioSpriteDownloader()
+    val fetcher = ESOWallpaperDownloader()
     val assetInfos = crawl(fetcher, fetcher.baseUrl())
     println("Found ${assetInfos.size} assets.")
 
 //    download(assetInfos.first())
 
-    val totalChunks = assetInfos.size/ CHUNK_SIZE
+    val totalChunks = assetInfos.size / CHUNK_SIZE
     assetInfos.chunked(CHUNK_SIZE).withIndex().forEach {
         downloadChunk(it.value, it.index, totalChunks)
     }
@@ -82,11 +82,16 @@ private fun download(info: AssetInfo) {
     connection.connect()
 
     val file = File(info.fileName)
-    copy(connection.getInputStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    try {
+        copy(connection.getInputStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    } catch (ex: Exception) {
+        println("Failed to download ${info.fileName} from ${info.url}")
+        println(ex)
+    }
 
 }
 
 
-fun String.makePipeSafe() : String {
+fun String.makePipeSafe(): String {
     return this.replace("|", "[")
 }

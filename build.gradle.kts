@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation("org.jsoup:jsoup:1.13.1")
     testCompile("junit", "junit", "4.12")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
 }
