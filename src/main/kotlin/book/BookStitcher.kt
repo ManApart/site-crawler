@@ -5,9 +5,9 @@ import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.*
 
-val book: BookInfo = CathedralAndBazaar()
+val books: List<BookInfo> = listOf()
 
-const val MAX_DEPTH = 1000
+const val MAX_DEPTH = 100
 
 const val HEADER = "<html>\n" +
         "<body>\n" +
@@ -19,23 +19,33 @@ const val FOOTER = "</body>\n" +
 
 
 fun main(args: Array<String>) {
-    crawl(book.siteUrl, book.pageFetcher)
+    books.forEach { book ->
+        crawl(book.siteUrl, book.pageFetcher, book.fileName, book.siteName)
+    }
 }
 
-fun crawl(url: String, fetcher: PageFetcher, depth: Int = 0, pageList: MutableList<String> = mutableListOf(), previousData: String = "") {
+fun crawl(
+    url: String,
+    fetcher: PageFetcher,
+    fileNameBuilder: (Int, String) -> String,
+    siteName: String,
+    depth: Int = 0,
+    pageList: MutableList<String> = mutableListOf(),
+    previousData: String = ""
+) {
     val data = fetchData(url)
-    val fileName = ensureEndsInHTML(book.fileName(depth, url))
+    val fileName = ensureEndsInHTML(fileNameBuilder(depth, url))
     val pathName = "./download/$fileName"
     saveData(pathName, data)
     pageList.add(fileName)
     if (fetcher.hasNext(data) && depth < MAX_DEPTH && data != previousData) {
-        crawl(fetcher.getNextUrl(data), fetcher, depth + 1, pageList, data)
+        crawl(fetcher.getNextUrl(data), fetcher, fileNameBuilder, siteName, depth + 1, pageList, data)
     } else {
-        createIndexPage(pageList)
+        createIndexPage(siteName, pageList)
     }
 }
 
-private fun fetchData(url: String): String {
+fun fetchData(url: String): String {
     Scanner(
         URL(url).openStream(),
         StandardCharsets.UTF_8.toString()
@@ -51,7 +61,7 @@ private fun saveData(fileName: String, data: String) {
     }
 }
 
-private fun createIndexPage(pageList: List<String>) {
+private fun createIndexPage(siteName: String, pageList: List<String>) {
     var indexData = HEADER
     pageList.forEach {
         indexData += "<a href=\"$it\">$it</a><br />\n"
@@ -59,11 +69,11 @@ private fun createIndexPage(pageList: List<String>) {
     indexData += FOOTER
 
     println(indexData)
-    saveData("./download/${book.siteName}.html", indexData)
+    saveData("./download/${siteName}.html", indexData)
 }
 
-private fun ensureEndsInHTML(fileName: String) : String {
-    return if (fileName.endsWith(".html")){
+private fun ensureEndsInHTML(fileName: String): String {
+    return if (fileName.endsWith(".html")) {
         fileName
     } else {
         "$fileName.html"

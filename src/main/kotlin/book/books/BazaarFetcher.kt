@@ -1,7 +1,9 @@
-package book
+package book.books
 
-class PhilosophyOfUnixFetcher : PageFetcher {
-    private val matchText = "<link rel=\"next\" href=\""
+import book.PageFetcher
+
+class BazaarFetcher : PageFetcher {
+    private val matchText = "<a accesskey=\"n\" href=\""
 
     override fun hasNext(pageData: String): Boolean {
         return pageData.contains(matchText)
@@ -11,6 +13,6 @@ class PhilosophyOfUnixFetcher : PageFetcher {
         val start = pageData.indexOf(matchText) + matchText.length
         val end = pageData.indexOf("\"", start)
         val extracted = pageData.substring(start, end)
-        return "http://www.catb.org/esr/writings/taoup/html/$extracted"
+        return "http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/$extracted"
     }
 }
