@@ -35,13 +35,14 @@ fun crawl(
 ) {
     val data = fetchData(url)
     val fileName = ensureEndsInHTML(fileNameBuilder(depth, url))
-    val pathName = "./download/$fileName"
+    val baseName = siteName.filter { it.isLetter() }
+    val pathName = "./download/${baseName}/$fileName"
     saveData(pathName, data)
     pageList.add(fileName)
     if (fetcher.hasNext(data) && depth < MAX_DEPTH && data != previousData) {
         crawl(fetcher.getNextUrl(data), fetcher, fileNameBuilder, siteName, depth + 1, pageList, data)
     } else {
-        createIndexPage(siteName, pageList)
+        createIndexPage(baseName, pageList)
     }
 }
 
@@ -68,8 +69,7 @@ private fun createIndexPage(siteName: String, pageList: List<String>) {
     }
     indexData += FOOTER
 
-    println(indexData)
-    saveData("./download/${siteName}.html", indexData)
+    saveData("./download/${siteName}/${siteName}.html", indexData)
 }
 
 private fun ensureEndsInHTML(fileName: String): String {

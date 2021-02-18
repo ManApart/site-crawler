@@ -1,26 +1,33 @@
 package book.books
 
+import assetDownloader.fetchData
 import book.PageFetcher
 import org.jsoup.Jsoup
 
-class WorldInvisibilityFetcher(private val baseUrl: String) : PageFetcher {
-    private val fetchedPages = mutableListOf<String>()
+class WorldInvisibilityFetcher(private val baseUrl: String, private val initialUrl: String) : PageFetcher {
+    private val urls by lazy { fetchInitialUrls() }
+    private var i = -1
+
+    private fun fetchInitialUrls(): List<String> {
+        val links = Jsoup.parse(fetchData(initialUrl)).select("a")
+
+        return links.map { it.attr("href") }
+            .filter {
+                it.isNotBlank()
+                        && !it.contains("www.")
+                        && !it.contains("worldinvisible.com")
+                        && !it.contains("../")
+                        && !it.contains("#")
+            }.map { baseUrl + it }
+    }
 
     override fun hasNext(pageData: String): Boolean {
-        val urlPart = getNext(pageData)
-        return urlPart != null
+        return i < urls.size - 1
     }
 
     override fun getNextUrl(pageData: String): String {
-        val urlPart = getNext(pageData)!!
-        fetchedPages.add(urlPart)
-        return baseUrl + urlPart
-    }
-
-    private fun getNext(data: String): String? {
-        return Jsoup.parse(data).select("a").firstOrNull { link ->
-            link.text().contains("chapter", true) && !fetchedPages.contains(link.attr("href"))
-        }?.attr("href")
+        i++
+        return urls[i]
     }
 
 }
