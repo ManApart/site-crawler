@@ -65,7 +65,7 @@ fun downloadChunk(infos: List<AssetInfo>, i: Int, totalChunks: Int) {
     println("Downloading chunk $i/$totalChunks")
     runBlocking {
         infos.forEach {
-            async {
+            launch {
                 download(it)
             }
         }
