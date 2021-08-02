@@ -1,15 +1,13 @@
 package assetDownloader
 
-//https://xbox-clips.com/iceburg%2033308/
-
-//https://gameclipscontent-d3021.xboxlive.com/xuid-2533274911938188-private/b7f6585c-4d61-414b-903f-66e306a811f3.MP4?sv=2015-12-11&sr=b&si=DefaultAccess&sig=t6EAWASHnPpikH25ZqiFrSTbsI1Cvd95mxfBhjiSd54%3D&__gda__=1597107235_c299992ac79f507b8e8ac083606b135d
+// https://xboxclips.co/iceburg33308#
 class XboxClipDownloader(private val userName: String) : AssetPageFetcher {
-    private val assetDownloadUrlLineStart = "<a href=\"https://gameclipscontent"
-    private val assetUrlStart = "href=\""
+    private val assetDownloadUrlLineStart = "<a href=\"https://xboxclips.co/$userName/"
+    private val assetUrlStart = "data-url=\""
     private val assetUrlEnd = "\""
 
     override fun baseUrl(): String {
-        return "https://xbox-clips.com/$userName/"
+        return "https://xboxclips.co/$userName"
     }
 
     override fun hasNext(pageData: String): Boolean {
