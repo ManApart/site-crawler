@@ -5,17 +5,25 @@ import org.jsoup.nodes.Element
 import java.io.File
 
 
-fun main(){
+fun main() {
     val source = File("./download/crops.html").readText()
     val parsed = Jsoup.parse(source)
     val crops = parsed.getElementsByClass("wikitable")
         .filter { it.child(0).child(0).child(0).text() == "Seeds" }
         .map { parsecrop(it.child(0)) }
-    println(crops.joinToString())
+
+    println(HEADER)
+    println(crops.joinToString("\n") { it.toRow() })
 }
 
 fun parsecrop(table: Element): CropInfo {
-    return CropInfo(parseName(table), parseSeedCost(table), parseInitialGrowth(table), parseRegrowth(table), parseSellPrice(table))
+    return CropInfo(
+        parseName(table),
+        parseSeedCost(table),
+        parseInitialGrowth(table),
+        parseRegrowth(table),
+        parseSellPrice(table)
+    )
 }
 
 private fun parseName(table: Element): String {
@@ -28,7 +36,6 @@ private fun parseSeedCost(table: Element): Int {
 
 private fun parseInitialGrowth(table: Element): Int {
     return table.getElementsContainingText("Total:").last().text().getNumberInMiddle("Total:", "day")
-//    return table.getElementsContainingText("Total:").last().text().replace("Total:", "").replace("days", "").trim().toInt()
 }
 
 private fun parseRegrowth(table: Element): Int {
@@ -51,7 +58,7 @@ private fun textByHeader(table: Element, headerText: String): String {
 }
 
 private fun String.isPrice(): Boolean {
-    return endsWith("g") && get(length-2).isDigit()
+    return endsWith("g") && get(length - 2).isDigit()
 }
 
 private fun String.toPrice(): Int {
