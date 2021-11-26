@@ -18,7 +18,7 @@ const val FOOTER = "</body>\n" +
         "</html>"
 
 
-fun main(args: Array<String>) {
+fun main() {
     books.forEach { book ->
         crawl(book.siteUrl, book.pageFetcher, book.fileName, book.siteName)
     }
