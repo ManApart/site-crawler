@@ -1,5 +1,7 @@
 package assetDownloader
 
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.jsoup.Jsoup
 
 //https://www.wikiart.org/en/norman-rockwell/all-works/text-list
@@ -27,10 +29,15 @@ class WikiArtDownloader(private val base: String, private val limit: Int = 10000
             }
         }.flatten().take(limit).associate { it.first to it.second }.toMutableMap()
 
-        urlMap.keys.forEach { title ->
-            urlMap[title] = Jsoup.connect(urlMap[title]).get()
-                .getElementsByAttributeValue("itemprop", "image").first()
-                .attr("src").cleanImageUrl()
+        println("Finding downloads for ${urlMap.keys.size} assets")
+        runBlocking {
+            urlMap.keys.forEach { title ->
+                launch {
+                    urlMap[title] = Jsoup.connect(urlMap[title]).get()
+                        .getElementsByAttributeValue("itemprop", "image").first()
+                        .attr("src").cleanImageUrl()
+                }
+            }
         }
         return urlMap.entries.map { AssetInfo(it.value, "./download/${it.key}.jpg") }
     }

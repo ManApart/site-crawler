@@ -16,7 +16,7 @@ fun main() {
 //    val fetcher = XboxScreenShotDownloader("iceburg-33308")
 //    val fetcher = XboxClipDownloader("iceburg33308")
 //    val fetcher = ESOWallpaperDownloader()
-    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list", 1)
+    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
     val assetInfos = crawl(fetcher, fetcher.baseUrl())
     println("Found ${assetInfos.size} assets.")
 
