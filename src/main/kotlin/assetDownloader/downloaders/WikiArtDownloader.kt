@@ -1,5 +1,7 @@
-package assetDownloader
+package assetDownloader.downloaders
 
+import assetDownloader.AssetInfo
+import assetDownloader.AssetPageFetcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.jsoup.Jsoup

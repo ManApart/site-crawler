@@ -1,5 +1,7 @@
 package assetDownloader
 
+import assetDownloader.downloaders.ArtStationDownloader
+import assetDownloader.downloaders.WikiArtDownloader
 import java.io.File
 import java.net.URL
 import java.net.URLConnection
@@ -16,7 +18,8 @@ fun main() {
 //    val fetcher = XboxScreenShotDownloader("iceburg-33308")
 //    val fetcher = XboxClipDownloader("iceburg33308")
 //    val fetcher = ESOWallpaperDownloader()
-    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
+//    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
+    val fetcher = ArtStationDownloader("https://magazine.artstation.com/2022/01/343-industries-halo-infinite-art-blast/", "https://magazine.artstation.com/wp-content/uploads/")
     val assetInfos = crawl(fetcher, fetcher.baseUrl())
     println("Found ${assetInfos.size} assets.")
 

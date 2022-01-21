@@ -1,5 +1,7 @@
-package assetDownloader
+package assetDownloader.downloaders
 
+import assetDownloader.AssetInfo
+import assetDownloader.AssetPageFetcher
 import org.jsoup.Jsoup
 
 //https://en.uesp.net/wiki/General:Wallpapers

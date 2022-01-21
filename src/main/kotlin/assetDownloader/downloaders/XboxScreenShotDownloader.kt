@@ -1,4 +1,8 @@
-package assetDownloader
+package assetDownloader.downloaders
+
+import assetDownloader.AssetInfo
+import assetDownloader.AssetPageFetcher
+import assetDownloader.fetchData
 
 //https://gamerdvr.com/gamer/iceburg-33308/screenshots?page=1
 //https://gamerdvr.com/gamer/iceburg-33308/screenshot/18012598

@@ -1,4 +1,7 @@
-package assetDownloader
+package assetDownloader.downloaders
+
+import assetDownloader.AssetInfo
+import assetDownloader.AssetPageFetcher
 
 //http://www.mariouniverse.com/sprites-snes-yi/
 //http://www.mariouniverse.com/wp-content/img/sprites/snes/yi/amazee-dayzee.png
