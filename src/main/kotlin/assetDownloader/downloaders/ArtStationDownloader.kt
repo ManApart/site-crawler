@@ -27,11 +27,14 @@ class ArtStationDownloader(private val base: String, private val uploadPrefix: S
             .select("img")
             .map { it.attr("src") }
             .filter { it.startsWith(uploadPrefix) }
-            .map { AssetInfo(it, "./download/${it.cleanTitle()}") }
+            .map {
+                AssetInfo(it, "./download/${it.cleanTitle()}")
+            }
     }
 
     private fun String.cleanTitle(): String {
-        return substring(lastIndexOf("/") + 1)
+        val end = if (indexOf("?") != -1) indexOf("?") else length
+        return substring(lastIndexOf("/") + 1, end)
     }
 
 }

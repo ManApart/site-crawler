@@ -1,7 +1,6 @@
 package assetDownloader
 
 import assetDownloader.downloaders.ArtStationDownloader
-import assetDownloader.downloaders.WikiArtDownloader
 import java.io.File
 import java.net.URL
 import java.net.URLConnection
@@ -19,8 +18,9 @@ fun main() {
 //    val fetcher = XboxClipDownloader("iceburg33308")
 //    val fetcher = ESOWallpaperDownloader()
 //    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
-    val fetcher = ArtStationDownloader("https://magazine.artstation.com/2022/01/343-industries-halo-infinite-art-blast/", "https://magazine.artstation.com/wp-content/uploads/")
-    val assetInfos = crawl(fetcher, fetcher.baseUrl())
+    val fetcher = ArtStationDownloader("https://franrek.artstation.com/projects/kDX3Nz", "https://cdnb.artstation.com/p/assets/images/")
+    val assetInfos = crawlLocal(fetcher)
+//    val assetInfos = crawl(fetcher, fetcher.baseUrl())
     println("Found ${assetInfos.size} assets.")
 
 //    download(assetInfos.first())
@@ -31,7 +31,7 @@ fun main() {
     }
 }
 
-fun crawl(fetcher: AssetPageFetcher, url: String, depth: Int = 0): List<AssetInfo> {
+private fun crawl(fetcher: AssetPageFetcher, url: String, depth: Int = 0): List<AssetInfo> {
     println("Finding assets at $url")
     val data = fetchData(url)
 
@@ -44,6 +44,13 @@ fun crawl(fetcher: AssetPageFetcher, url: String, depth: Int = 0): List<AssetInf
         }
     }
     return infos
+}
+
+private fun crawlLocal(fetcher: AssetPageFetcher): List<AssetInfo> {
+    println("Finding assets for local")
+    val data = File("./src/in/local.html").readText()
+
+    return fetcher.getAssetInfos("local", data)
 }
 
 fun fetchData(url: String): String {
@@ -93,9 +100,4 @@ private fun download(info: AssetInfo) {
         println(ex)
     }
 
-}
-
-
-fun String.makePipeSafe(): String {
-    return this.replace("|", "[")
 }
