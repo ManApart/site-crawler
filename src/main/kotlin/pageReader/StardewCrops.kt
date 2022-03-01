@@ -35,13 +35,13 @@ private fun parseSeedCost(table: Element): Int {
 }
 
 private fun parseInitialGrowth(table: Element): Int {
-    return table.getElementsContainingText("Total:").last().text().getNumberInMiddle("Total:", "day")
+    return table.getElementsContainingText("Total:").last()!!.text().getNumberInMiddle("Total:", "day")
 }
 
 private fun parseRegrowth(table: Element): Int {
     val matches = table.getElementsContainingText("Regrowth:")
     return if (matches.isEmpty()) 0 else {
-        matches.last().text().getNumberInMiddle("Regrowth:", "day")
+        matches.last()!!.text().getNumberInMiddle("Regrowth:", "day")
     }
 }
 

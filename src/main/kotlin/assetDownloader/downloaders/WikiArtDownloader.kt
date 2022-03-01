@@ -24,7 +24,7 @@ class WikiArtDownloader(private val base: String, private val limit: Int = 10000
     override fun getAssetInfos(url: String, pageData: String): List<AssetInfo> {
         val urlMap = Jsoup.parse(pageData).select("ul.painting-list-text").map { gallery ->
             gallery.select(".painting-list-text-row").map { listItem ->
-                val link = listItem.select("a").last()
+                val link = listItem.select("a").last()!!
                 val href = "https://www.wikiart.org" + link.attr("href")
                 val title = href.cleanTitle()
                 title to href
@@ -35,8 +35,8 @@ class WikiArtDownloader(private val base: String, private val limit: Int = 10000
         runBlocking {
             urlMap.keys.forEach { title ->
                 launch {
-                    urlMap[title] = Jsoup.connect(urlMap[title]).get()
-                        .getElementsByAttributeValue("itemprop", "image").first()
+                    urlMap[title] = Jsoup.connect(urlMap[title]!!).get()
+                        .getElementsByAttributeValue("itemprop", "image").first()!!
                         .attr("src").cleanImageUrl()
                 }
             }

@@ -24,7 +24,7 @@ class ESOWallpaperDownloader : AssetPageFetcher {
     override fun getAssetInfos(url: String, pageData: String): List<AssetInfo> {
         val urlMap = Jsoup.parse(pageData).select("ul.gallery").map { gallery ->
             gallery.select(".gallerytext").map { image ->
-                val link = image.select("a").last()
+                val link = image.select("a").last()!!
                 val title = cleanTitle(link.attr("title"))
                 val href = "https://en.uesp.net" + link.attr("href")
                 title to href
@@ -32,7 +32,7 @@ class ESOWallpaperDownloader : AssetPageFetcher {
         }.flatten().associate { it.first to it.second }.toMutableMap()
 
         urlMap.keys.forEach { title ->
-            urlMap[title] = "http:" + Jsoup.connect(urlMap[title]).get().select(".fullMedia a").first().attr("href")
+            urlMap[title] = "http:" + Jsoup.connect(urlMap[title]!!).get().select(".fullMedia a").first()!!.attr("href")
         }
         return urlMap.entries.map { AssetInfo(it.value, "./download/" + it.key) }
     }
