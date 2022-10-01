@@ -60,7 +60,7 @@ class XboxScreenShotDownloader(private val userName: String) : AssetPageFetcher 
     }
 
     private fun getRealUrl(urlToInnerPage: String): String {
-        val pageData = fetchData(urlToInnerPage)
+        val pageData = fetchData(urlToInnerPage, mapOf())
 
         val line = pageData
             .split("\n")

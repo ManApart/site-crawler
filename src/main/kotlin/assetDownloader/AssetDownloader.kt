@@ -19,9 +19,9 @@ fun main() {
 //    val fetcher = ESOWallpaperDownloader()
 //    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
 //    val fetcher = ArtStationDownloader("https://franrek.artstation.com/projects/kDX3Nz", "https://cdnb.artstation.com/p/assets/images/")
-    val fetcher = PexelsDownloader()
-    val assetInfos = crawlLocal(fetcher, false)
-//    val assetInfos = crawl(fetcher, fetcher.baseUrl())
+    val fetcher = PexelsDownloader("landscape", 11, 20, 200, "H2jk9uKnhRmL6WPwh89zBezWvr")
+//    val assetInfos = crawlLocal(fetcher, false)
+    val assetInfos = crawl(fetcher, fetcher.baseUrl(), fetcher.getHeaders())
     println("Found ${assetInfos.size} assets.")
 
 //    download(assetInfos.first())
@@ -32,16 +32,16 @@ fun main() {
     }
 }
 
-private fun crawl(fetcher: AssetPageFetcher, url: String, depth: Int = 0): List<AssetInfo> {
+private fun crawl(fetcher: AssetPageFetcher, url: String, headers: Map<String, String>, depth: Int = 0): List<AssetInfo> {
     println("Finding assets at $url")
-    val data = fetchData(url)
+    val data = fetchData(url, headers)
 
     val infos = fetcher.getAssetInfos(url, data)
 
     if (fetcher.hasNext(data) && depth < MAX_DEPTH) {
         val nextUrl = fetcher.getNextUrl(data)
         if (url != nextUrl) {
-            return infos + crawl(fetcher, nextUrl, depth + 1)
+            return infos + crawl(fetcher, nextUrl, headers, depth + 1)
         }
     }
     return infos
@@ -55,15 +55,19 @@ private fun crawlLocal(fetcher: AssetPageFetcher, useHtml: Boolean = true): List
     return fetcher.getAssetInfos("local", data)
 }
 
-fun fetchData(url: String): String {
+fun fetchData(url: String, headers: Map<String, String>): String {
     val connection: URLConnection = URL(url).openConnection()
-    //fake we're a browser for https
-    connection.setRequestProperty(
-        "User-Agent",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
-    )
-    connection.connect()
-
+    with(connection) {
+        //fake we're a browser for https
+        setRequestProperty(
+            "User-Agent",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+        )
+        headers.entries.forEach { (key, value) ->
+            setRequestProperty(key, value)
+        }
+        connect()
+    }
     Scanner(
         connection.getInputStream(),
         StandardCharsets.UTF_8.toString()

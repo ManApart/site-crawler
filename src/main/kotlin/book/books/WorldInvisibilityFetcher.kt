@@ -9,7 +9,7 @@ class WorldInvisibilityFetcher(private val baseUrl: String, private val initialU
     private var i = -1
 
     private fun fetchInitialUrls(): List<String> {
-        val links = Jsoup.parse(fetchData(initialUrl)).select("a")
+        val links = Jsoup.parse(fetchData(initialUrl, mapOf())).select("a")
 
         return links.map { it.attr("href") }
             .filter {
