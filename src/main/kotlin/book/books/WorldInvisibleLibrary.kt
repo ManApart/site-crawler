@@ -10,7 +10,7 @@ val worldInvisible = LibraryInfo(
 )
 
 private fun process(data: String): List<BookInfo> {
-    return Jsoup.parse(data).select("a")
+    return Jsoup.parse(data).select("a").toList()
         .filter {
             val url = it.attr("href")
             url.isNotBlank()

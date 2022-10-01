@@ -8,7 +8,7 @@ import java.io.File
 fun main() {
     val source = File("./download/crops.html").readText()
     val parsed = Jsoup.parse(source)
-    val crops = parsed.getElementsByClass("wikitable")
+    val crops = parsed.getElementsByClass("wikitable").toList()
         .filter { it.child(0).child(0).child(0).text() == "Seeds" }
         .map { parsecrop(it.child(0)) }
 

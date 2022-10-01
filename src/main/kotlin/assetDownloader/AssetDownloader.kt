@@ -1,6 +1,6 @@
 package assetDownloader
 
-import assetDownloader.downloaders.ArtStationDownloader
+import assetDownloader.downloaders.PexelsDownloader
 import java.io.File
 import java.net.URL
 import java.net.URLConnection
@@ -18,8 +18,9 @@ fun main() {
 //    val fetcher = XboxClipDownloader("iceburg33308")
 //    val fetcher = ESOWallpaperDownloader()
 //    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
-    val fetcher = ArtStationDownloader("https://franrek.artstation.com/projects/kDX3Nz", "https://cdnb.artstation.com/p/assets/images/")
-    val assetInfos = crawlLocal(fetcher)
+//    val fetcher = ArtStationDownloader("https://franrek.artstation.com/projects/kDX3Nz", "https://cdnb.artstation.com/p/assets/images/")
+    val fetcher = PexelsDownloader()
+    val assetInfos = crawlLocal(fetcher, false)
 //    val assetInfos = crawl(fetcher, fetcher.baseUrl())
     println("Found ${assetInfos.size} assets.")
 
@@ -46,9 +47,10 @@ private fun crawl(fetcher: AssetPageFetcher, url: String, depth: Int = 0): List<
     return infos
 }
 
-private fun crawlLocal(fetcher: AssetPageFetcher): List<AssetInfo> {
+private fun crawlLocal(fetcher: AssetPageFetcher, useHtml: Boolean = true): List<AssetInfo> {
     println("Finding assets for local")
-    val data = File("./src/in/local.html").readText()
+    val file = if (useHtml) File("./src/in/local.html") else File("./src/in/local.json")
+    val data = file.readText()
 
     return fetcher.getAssetInfos("local", data)
 }
@@ -58,7 +60,7 @@ fun fetchData(url: String): String {
     //fake we're a browser for https
     connection.setRequestProperty(
         "User-Agent",
-        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
     )
     connection.connect()
 
@@ -74,6 +76,9 @@ fun fetchData(url: String): String {
 
 fun downloadChunk(infos: List<AssetInfo>, i: Int, totalChunks: Int) {
     println("Downloading chunk $i/$totalChunks")
+    with(File("./download")) {
+        if (!exists()) mkdirs()
+    }
     runBlocking {
         infos.forEach {
             launch {
