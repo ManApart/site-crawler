@@ -1,8 +1,6 @@
 package assetDownloader
 
-import assetDownloader.downloaders.PexelsDownloader
 import assetDownloader.downloaders.PrintableBrickDownloader
-import book.fetchData
 import java.io.File
 import java.net.URL
 import java.net.URLConnection
@@ -23,8 +21,12 @@ fun main() {
 //    val fetcher = ArtStationDownloader("https://franrek.artstation.com/projects/kDX3Nz", "https://cdnb.artstation.com/p/assets/images/")
 //    val fetcher = PexelsDownloader("forest", 11, 20, 200, "H2jk9uKnhRmL6WPwh89zBezWvr")
     val fetcher = PrintableBrickDownloader(10, 50)
-//    val assetInfos = crawlLocal(fetcher, false)
-    val assetInfos = crawl(fetcher, fetcher.baseUrl(), fetcher.getHeaders())
+
+    crawlAndDownload(fetcher, fetcher.baseUrl(), fetcher.getHeaders())
+}
+
+private fun crawlAndDownload(fetcher: AssetPageFetcher, url: String, headers: Map<String, String>, depth: Int = 0){
+    val (data, assetInfos) = crawl(fetcher, url, headers)
     println("Found ${assetInfos.size} assets.")
 
 //    download(assetInfos.first())
@@ -33,26 +35,27 @@ fun main() {
     assetInfos.chunked(CHUNK_SIZE).withIndex().forEach {
         downloadChunk(it.value, it.index, totalChunks)
     }
+
+    if (fetcher.hasNext(data) && depth < MAX_DEPTH) {
+        val nextUrl = fetcher.getNextUrl(data)
+        if (url != nextUrl) {
+            crawlAndDownload(fetcher, nextUrl, headers, depth + 1)
+        }
+    }
 }
 
-private fun crawl(fetcher: AssetPageFetcher, url: String, headers: Map<String, String>, depth: Int = 0): List<AssetInfo> {
+private fun crawl(fetcher: AssetPageFetcher, url: String, headers: Map<String, String>, depth: Int = 0): Pair<String, List<AssetInfo>> {
     println("Finding assets at $url")
     val data = fetchData(url, headers)
 
     val infos = try {
-         fetcher.getAssetInfos(url, data)
+        fetcher.getAssetInfos(url, data)
     } catch (e: Exception){
         println("Failed to get asset infos: $e")
         emptyList()
     }
 
-    if (fetcher.hasNext(data) && depth < MAX_DEPTH) {
-        val nextUrl = fetcher.getNextUrl(data)
-        if (url != nextUrl) {
-            return infos + crawl(fetcher, nextUrl, headers, depth + 1)
-        }
-    }
-    return infos
+    return Pair(data, infos)
 }
 
 private fun crawlLocal(fetcher: AssetPageFetcher, useHtml: Boolean = true): List<AssetInfo> {
@@ -92,11 +95,11 @@ fun downloadChunk(infos: List<AssetInfo>, i: Int, totalChunks: Int) {
         if (!exists()) mkdirs()
     }
     runBlocking {
-        infos.forEach {
-            launch {
+        infos.map {
+            async {
                 download(it)
             }
-        }
+        }.awaitAll()
     }
 }
 
