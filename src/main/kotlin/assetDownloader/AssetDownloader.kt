@@ -20,7 +20,7 @@ fun main() {
 //    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
 //    val fetcher = ArtStationDownloader("https://franrek.artstation.com/projects/kDX3Nz", "https://cdnb.artstation.com/p/assets/images/")
 //    val fetcher = PexelsDownloader("forest", 11, 20, 200, "H2jk9uKnhRmL6WPwh89zBezWvr")
-    val fetcher = PrintableBrickDownloader(10, 50)
+    val fetcher = PrintableBrickDownloader(60, 40)
 
     crawlAndDownload(fetcher, fetcher.baseUrl(), fetcher.getHeaders())
 }

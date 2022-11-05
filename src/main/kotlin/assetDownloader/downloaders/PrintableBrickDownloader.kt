@@ -19,7 +19,7 @@ class PrintableBrickDownloader(private val start: Int = 1, private val pagesToDo
     }
 
     override fun hasNext(pageData: String): Boolean {
-        return currentPage <= start + pagesToDownload
+        return currentPage < start + pagesToDownload - 1
     }
 
     override fun getNextUrl(pageData: String): String {
