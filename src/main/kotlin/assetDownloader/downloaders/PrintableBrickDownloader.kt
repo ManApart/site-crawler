@@ -19,7 +19,7 @@ class PrintableBrickDownloader(private val start: Int = 1, private val pagesToDo
     }
 
     override fun hasNext(pageData: String): Boolean {
-        return currentPage < start + pagesToDownload
+        return currentPage <= start + pagesToDownload
     }
 
     override fun getNextUrl(pageData: String): String {
@@ -34,17 +34,23 @@ class PrintableBrickDownloader(private val start: Int = 1, private val pagesToDo
             .map { "https://printablebricks.com$it" }
 
         return runBlocking {
-            assetUrls.map { async { getAssetFromPage(it) } }.awaitAll()
+            assetUrls.map { async { getAssetFromPage(it) } }.awaitAll().filterNotNull()
         }
     }
 
-    private fun getAssetFromPage(url: String): AssetInfo {
-        val decoded = Jsoup.connect(url).get()
-            .select("canvas").first()!!
-            .attr("sourceFiles")
-            .let { String(base64.decode(String(base64.decode(it)))) }
+    private fun getAssetFromPage(url: String): AssetInfo? {
+        return try {
+            val decoded = Jsoup.connect(url).get()
+                .select("canvas").first()!!
+                .attr("sourceFiles")
+                .let { String(base64.decode(String(base64.decode(it)))) }
 
-        return AssetInfo("https://printablebricks.com$decoded", cleanBrickName(decoded))
+            AssetInfo("https://printablebricks.com$decoded", cleanBrickName(decoded))
+        } catch (e: Exception) {
+            println("Could not fetch info for $url")
+            println(e)
+            null
+        }
     }
 
     private fun cleanBrickName(decoded: String): String {

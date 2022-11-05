@@ -2,6 +2,7 @@ package assetDownloader
 
 import assetDownloader.downloaders.PexelsDownloader
 import assetDownloader.downloaders.PrintableBrickDownloader
+import book.fetchData
 import java.io.File
 import java.net.URL
 import java.net.URLConnection
@@ -21,7 +22,7 @@ fun main() {
 //    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
 //    val fetcher = ArtStationDownloader("https://franrek.artstation.com/projects/kDX3Nz", "https://cdnb.artstation.com/p/assets/images/")
 //    val fetcher = PexelsDownloader("forest", 11, 20, 200, "H2jk9uKnhRmL6WPwh89zBezWvr")
-    val fetcher = PrintableBrickDownloader(2, 2)
+    val fetcher = PrintableBrickDownloader(10, 50)
 //    val assetInfos = crawlLocal(fetcher, false)
     val assetInfos = crawl(fetcher, fetcher.baseUrl(), fetcher.getHeaders())
     println("Found ${assetInfos.size} assets.")
@@ -38,7 +39,12 @@ private fun crawl(fetcher: AssetPageFetcher, url: String, headers: Map<String, S
     println("Finding assets at $url")
     val data = fetchData(url, headers)
 
-    val infos = fetcher.getAssetInfos(url, data)
+    val infos = try {
+         fetcher.getAssetInfos(url, data)
+    } catch (e: Exception){
+        println("Failed to get asset infos: $e")
+        emptyList()
+    }
 
     if (fetcher.hasNext(data) && depth < MAX_DEPTH) {
         val nextUrl = fetcher.getNextUrl(data)
