@@ -17,12 +17,3 @@ dependencies {
     testImplementation("junit", "junit", "4.12")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 }
-
-tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "14"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "14"
-    }
-}

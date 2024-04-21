@@ -1,6 +1,6 @@
 package assetDownloader
 
-import assetDownloader.downloaders.StarfieldWikiDownloader
+import assetDownloader.downloaders.ArtStationDownloader
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -11,25 +11,27 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files.copy
 import java.nio.file.StandardCopyOption
 import java.util.*
+import java.util.Collections.emptyList
 
 const val MAX_DEPTH = 1000
 const val CHUNK_SIZE = 3
 const val DOWNLOAD_FIRST_ONLY = false
+const val CRAWL_LOCAL = true
 
 fun main() {
 //    val fetcher = XboxScreenShotDownloader("iceburg-33308")
 //    val fetcher = XboxClipDownloader("iceburg33308")
 //    val fetcher = ESOWallpaperDownloader()
 //    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
-//    val fetcher = ArtStationDownloader("https://franrek.artstation.com/projects/kDX3Nz", "https://cdnb.artstation.com/p/assets/images/")
+    val fetcher = ArtStationDownloader("https://www.artstation.com/nicatorshields", "https://cdna.artstation.com/p/assets/images/")
 //    val fetcher = PexelsDownloader("forest", 11, 20, 200, "H2jk9uKnhRmL6WPwh89zBezWvr")
 //    val fetcher = PrintableBrickDownloader(60, 40)
-    val fetcher = StarfieldWikiDownloader("https://starfieldwiki.net/wiki/Category:Starfield-Skill_Images")
+//    val fetcher = StarfieldWikiDownloader("https://starfieldwiki.net/wiki/Category:Starfield-Skill_Images")
     crawlAndDownload(fetcher, fetcher.baseUrl(), fetcher.getHeaders())
 }
 
 private fun crawlAndDownload(fetcher: AssetPageFetcher, url: String, headers: Map<String, String>, depth: Int = 0) {
-    val (data, assetInfos) = crawl(fetcher, url, headers)
+    val (data, assetInfos) = if (CRAWL_LOCAL) crawlLocal(fetcher) else crawl(fetcher, url, headers)
     println("Found ${assetInfos.size} assets.")
 
 
@@ -64,12 +66,12 @@ private fun crawl(fetcher: AssetPageFetcher, url: String, headers: Map<String, S
     return Pair(data, infos)
 }
 
-private fun crawlLocal(fetcher: AssetPageFetcher, useHtml: Boolean = true): List<AssetInfo> {
+private fun crawlLocal(fetcher: AssetPageFetcher, useHtml: Boolean = true): Pair<String, List<AssetInfo>> {
     println("Finding assets for local")
-    val file = if (useHtml) File("./src/in/local.html") else File("./src/in/local.json")
+    val file = if (useHtml) File("./in/local.html") else File("./in/local.json")
     val data = file.readText()
 
-    return fetcher.getAssetInfos("local", data)
+    return Pair(data, fetcher.getAssetInfos("local", data))
 }
 
 fun fetchData(url: String, headers: Map<String, String>): String {
