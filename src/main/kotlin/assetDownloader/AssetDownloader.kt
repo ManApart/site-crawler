@@ -23,7 +23,7 @@ fun main() {
 //    val fetcher = XboxClipDownloader("iceburg33308")
 //    val fetcher = ESOWallpaperDownloader()
 //    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
-    val fetcher = ArtStationDownloader("https://www.artstation.com/nicatorshields", "https://cdna.artstation.com/p/assets/images/")
+    val fetcher = ArtStationDownloader("https://www.artstation.com/nicatorshields", listOf("https://cdna.artstation.com/p/assets/images/", "https://cdnb.artstation.com/p/assets/images/"))
 //    val fetcher = PexelsDownloader("forest", 11, 20, 200, "H2jk9uKnhRmL6WPwh89zBezWvr")
 //    val fetcher = PrintableBrickDownloader(60, 40)
 //    val fetcher = StarfieldWikiDownloader("https://starfieldwiki.net/wiki/Category:Starfield-Skill_Images")
