@@ -1,6 +1,7 @@
 package assetDownloader
 
 import assetDownloader.downloaders.ArtStationDownloader
+import assetDownloader.downloaders.FiftyNineParksDownloader
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -16,14 +17,15 @@ import java.util.Collections.emptyList
 const val MAX_DEPTH = 1000
 const val CHUNK_SIZE = 3
 const val DOWNLOAD_FIRST_ONLY = false
-const val CRAWL_LOCAL = true
+const val CRAWL_LOCAL = false
 
 fun main() {
 //    val fetcher = XboxScreenShotDownloader("iceburg-33308")
 //    val fetcher = XboxClipDownloader("iceburg33308")
 //    val fetcher = ESOWallpaperDownloader()
 //    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
-    val fetcher = ArtStationDownloader("https://www.artstation.com/nicatorshields", listOf("https://cdna.artstation.com/p/assets/images/", "https://cdnb.artstation.com/p/assets/images/"))
+    val fetcher = FiftyNineParksDownloader()
+//    val fetcher = ArtStationDownloader("https://www.artstation.com/nicatorshields", listOf("https://cdna.artstation.com/p/assets/images/", "https://cdnb.artstation.com/p/assets/images/"))
 //    val fetcher = PexelsDownloader("forest", 11, 20, 200, "H2jk9uKnhRmL6WPwh89zBezWvr")
 //    val fetcher = PrintableBrickDownloader(60, 40)
 //    val fetcher = StarfieldWikiDownloader("https://starfieldwiki.net/wiki/Category:Starfield-Skill_Images")
