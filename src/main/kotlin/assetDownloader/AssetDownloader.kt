@@ -112,7 +112,7 @@ fun downloadChunk(infos: List<AssetInfo>, i: Int, totalChunks: Int) {
         }.awaitAll()
     }
 }
-
+//TODO - if additional infos function fetch them from page
 private fun download(info: AssetInfo) {
     val connection: URLConnection = URL(info.url).openConnection()
     try {
