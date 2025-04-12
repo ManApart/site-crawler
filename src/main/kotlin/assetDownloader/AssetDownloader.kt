@@ -15,7 +15,7 @@ import java.util.Collections.emptyList
 const val MAX_DEPTH = 1000
 const val CHUNK_SIZE = 10
 const val DOWNLOAD_FIRST_ONLY = false
-const val CRAWL_LOCAL = false
+const val CRAWL_LOCAL = true
 const val REDOWNLOAD_EXISTING = false
 
 //    val fetcher = XboxScreenShotDownloader("iceburg-33308")
@@ -117,7 +117,7 @@ private fun download(info: AssetInfo) {
     if (info.additionalInfos != null) {
         val data = if (download) fetchData(info.url, fetcher.getHeaders()) else file.readText()
         if (!file.exists()) File(info.fileName).writeText(data)
-        info.additionalInfos.invoke(data).forEach { download(it) }
+        info.additionalInfos.invoke(data).also { if (it.isNotEmpty()) println("Getting ${it.size} additional assets") }.forEach { download(it) }
     } else if (download) downloadToFile(info)
 }
 

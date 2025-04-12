@@ -18,19 +18,17 @@ class ImperialLibraryDownloader() : AssetPageFetcher {
     }
 
     override fun getAssetInfos(url: String, pageData: String): List<AssetInfo> {
-        return Jsoup.parse(pageData)
-            .select("a.title")
+        val parsed = Jsoup.parse(pageData)
+        return (parsed.select("#menu-item-236").select("ul.sub-menu").select("a") +
+                parsed.select("a.title"))
             .map {
-                //TODO - parse contents page
-                //TODO - pass additional infos for chapter sections
-                //  - filename group by book
                 val title = it.text().cleanTitle()
                 AssetInfo(it.attr("href"), "./download/${title}.html") { data ->
                     Jsoup.parse(data)
                         .select("h5:contains(Table)").first()?.siblingElements()?.select("ul")
-                        ?.select("a")?.map { chapter ->
-                            val chTitle = chapter.text().cleanTitle()
-                            AssetInfo(chapter.attr("href"), "./download/${title}-$chTitle.html")
+                        ?.select("a")?.mapIndexed { i, chapter ->
+                            val chUrl = chapter.attr("href").let { u -> if (u.startsWith("/")) "https://www.imperial-library.info$u" else u }
+                            AssetInfo(chUrl, "./download/${title}-$i.html")
                         } ?: emptyList()
                 }
             }
@@ -38,6 +36,8 @@ class ImperialLibraryDownloader() : AssetPageFetcher {
 
     private fun String.cleanTitle(): String {
         return replace(" ", "_")
+            .replace("/", "_")
+            .replace(",", "")
     }
 
 }
