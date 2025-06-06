@@ -1,6 +1,6 @@
 package assetDownloader
 
-import assetDownloader.downloaders.ImperialLibraryDownloader
+import assetDownloader.downloaders.UESPPictureDownloader
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -15,14 +15,15 @@ import java.util.Collections.emptyList
 const val MAX_DEPTH = 1000
 const val CHUNK_SIZE = 10
 const val DOWNLOAD_FIRST_ONLY = false
-const val CRAWL_LOCAL = true
+const val CRAWL_LOCAL = false
 const val REDOWNLOAD_EXISTING = false
 
 //    val fetcher = XboxScreenShotDownloader("iceburg-33308")
 //    val fetcher = XboxClipDownloader("iceburg33308")
 //    val fetcher = ESOWallpaperDownloader()
 //    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
-val fetcher = ImperialLibraryDownloader()
+//val fetcher = ImperialLibraryDownloader()
+val fetcher = UESPPictureDownloader("https://en.uesp.net/wiki/Shivering:Concept_Art")
 
 //    val fetcher = FiftyNineParksDownloader()
 //    val fetcher = ArtStationDownloader("https://www.artstation.com/nicatorshields", listOf("https://cdna.artstation.com/p/assets/images/", "https://cdnb.artstation.com/p/assets/images/"))
