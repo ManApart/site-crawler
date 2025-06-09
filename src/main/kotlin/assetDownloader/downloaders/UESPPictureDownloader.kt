@@ -29,8 +29,6 @@ class UESPPictureDownloader(private val base: String) : AssetPageFetcher {
         }
     }
 
-    ////images.uesp.net/thumb/c/cd/OB-concept-01.jpg/200px-OB-concept-01.jpg
-//            https://images.uesp.net/c/cd/OB-concept-01.jpg
     private fun String.cleanImageUrl(fileFormat: String): String {
         val i = indexOf(fileFormat)
         return substring(0, i + fileFormat.length)

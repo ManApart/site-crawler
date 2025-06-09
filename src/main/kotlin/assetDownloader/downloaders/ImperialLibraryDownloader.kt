@@ -6,16 +6,9 @@ import org.jsoup.Jsoup
 
 //https://www.imperial-library.info/content/pocket-guide-empire-and-its-environs-first-edition#4cd0e52a-1a9a-4308-87e9-ae9d8af022be-link
 class ImperialLibraryDownloader : AssetPageFetcher {
-
     override fun baseUrl() = "https://www.imperial-library.info/game-books/all-elder-scrolls-books"
-
-    override fun hasNext(pageData: String): Boolean {
-        return false
-    }
-
-    override fun getNextUrl(pageData: String): String {
-        return ""
-    }
+    override fun hasNext(pageData: String) = false
+    override fun getNextUrl(pageData: String) = ""
 
     override fun getAssetInfos(url: String, pageData: String): List<AssetInfo> {
         val parsed = Jsoup.parse(pageData)
