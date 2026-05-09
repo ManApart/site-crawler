@@ -1,11 +1,19 @@
 package book
 
+import book.books.article
+import nl.siegmann.epublib.domain.Author
+import nl.siegmann.epublib.domain.Book
+import nl.siegmann.epublib.domain.Resource
+import nl.siegmann.epublib.epub.EpubWriter
 import java.io.File
+import java.io.FileOutputStream
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.*
 
-val books: List<BookInfo> = listOf()
+val books: List<BookInfo> = listOf(
+    article
+)
 
 const val MAX_DEPTH = 100
 
@@ -21,6 +29,10 @@ const val FOOTER = "</body>\n" +
 fun main() {
     books.forEach { book ->
         crawl(book.siteUrl, book.pageFetcher, book.fileName, book.siteName)
+        val baseName = book.siteName.filter { it.isLetter() }
+        //TODO - chapters need to be sorted correctly
+        val chapters = File("./download/${baseName}").listFiles()!!.toList()
+        createEpub(book.siteName, book.author ?: "NA", chapters, book.coverImageName)
     }
 }
 
@@ -33,7 +45,7 @@ fun crawl(
     pageList: MutableList<String> = mutableListOf(),
     previousData: String = ""
 ) {
-    val data = fetchData(url)
+    val data = fetchData(url).let { fetcher.contentFilter(it) }
     val fileName = ensureEndsInHTML(fileNameBuilder(depth, url))
     val baseName = siteName.filter { it.isLetter() }
     val pathName = "./download/${baseName}/$fileName"
@@ -80,3 +92,22 @@ private fun ensureEndsInHTML(fileName: String): String {
     }
 }
 
+fun wrapHtml(data: String): String {
+    return "<html><body>$data</body></html>"
+}
+
+
+fun createEpub(title: String, author: String, chapters: List<File>, coverImageName: String? = null) {
+    val book = Book().apply {
+        metadata.addTitle(title)
+        metadata.addAuthor(Author(author))
+        if (coverImageName != null) {
+            coverImage = Resource(File("in/pictures/$coverImageName").inputStream(), coverImageName)
+        }
+        chapters.forEach { ch ->
+            addSection(ch.nameWithoutExtension.replace("_", " "), Resource(ch.inputStream(), ch.name))
+        }
+
+    }
+    EpubWriter().write(book, FileOutputStream("out/$title.epub"))
+}
