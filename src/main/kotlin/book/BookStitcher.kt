@@ -46,10 +46,10 @@ fun crawl(
     pageList: MutableList<String> = mutableListOf(),
     previousData: String = ""
 ) {
-    val data = fetchData(url).let { fetcher.contentFilter(url, it) }
     val fileName = ensureEndsInHTML(fileNameBuilder(depth, url))
     val baseName = siteName.filter { it.isLetter() }
     val pathName = "./download/${baseName}/$fileName"
+    val data = fetchData(url).let { fetcher.contentFilter(url, it) }.let { htmlToXhtml(it, fileName.replace(".html", "")) }
     saveData(pathName, data)
     pageList.add(fileName)
     if (fetcher.hasNext(data) && depth < MAX_DEPTH && data != previousData) {
@@ -82,7 +82,7 @@ private fun createIndexPage(siteName: String, pageList: List<String>) {
     }
     indexData += FOOTER
 
-    saveData("./download/${siteName}/${siteName}.html", indexData)
+    saveData("./download/${siteName}/${siteName}.html", htmlToXhtml(indexData, "Contents"))
 }
 
 private fun ensureEndsInHTML(fileName: String): String {
@@ -94,7 +94,7 @@ private fun ensureEndsInHTML(fileName: String): String {
 }
 
 fun wrapHtml(data: String): String {
-    return "<html><body>$data</body></html>"
+    return "<!DOCTYPE html><html lang=en-US><body>$data</body></html>"
 }
 
 
