@@ -30,8 +30,9 @@ fun main() {
     books.forEach { book ->
         crawl(book.siteUrl, book.pageFetcher, book.fileName, book.siteName)
         val baseName = book.siteName.filter { it.isLetter() }
-        //TODO - chapters need to be sorted correctly
-        val chapters = File("./download/${baseName}").listFiles()!!.toList()
+        val (numberedFiles, namedFiles) = File("./download/${baseName}").listFiles()!!.toList()
+            .partition { it.nameWithoutExtension.toIntOrNull() != null }
+        val chapters = namedFiles.sortedBy { it.nameWithoutExtension } + numberedFiles.sortedBy { it.nameWithoutExtension.toIntOrNull() }
         createEpub(book.siteName, book.author ?: "NA", chapters, book.coverImageName)
     }
 }
@@ -45,7 +46,7 @@ fun crawl(
     pageList: MutableList<String> = mutableListOf(),
     previousData: String = ""
 ) {
-    val data = fetchData(url).let { fetcher.contentFilter(it) }
+    val data = fetchData(url).let { fetcher.contentFilter(url, it) }
     val fileName = ensureEndsInHTML(fileNameBuilder(depth, url))
     val baseName = siteName.filter { it.isLetter() }
     val pathName = "./download/${baseName}/$fileName"

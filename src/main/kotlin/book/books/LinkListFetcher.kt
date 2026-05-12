@@ -15,5 +15,5 @@ class LinkListFetcher(val getContent: (String) -> String) : PageFetcher {
         return links[i].also { i++ }
     }
 
-    override fun contentFilter(pageData: String) = getContent(pageData)
+    override fun contentFilter(url: String, pageData: String) = getContent(pageData)
 }
