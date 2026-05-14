@@ -134,3 +134,4 @@ gradle-app.setting
 download/
 .idea/
 in/
+test.sh

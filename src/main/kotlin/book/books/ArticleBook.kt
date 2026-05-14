@@ -10,5 +10,6 @@ val article = BookInfo(
     { depth: Int, url: String -> "$depth${url.substring(url.lastIndexOf("/") + 1)}" },
     LinkListFetcher { data ->
         wrapHtml(Jsoup.parse(data).select("#primary").html())
-    }
+    },
+    coverImageName = "cover.jpg"
 )

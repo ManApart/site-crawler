@@ -1,7 +1,6 @@
 package assetDownloader
 
-import assetDownloader.downloaders.ImperialLibraryPictureDownloader
-import assetDownloader.downloaders.UESPPictureDownloader
+import assetDownloader.downloaders.StarfieldInaraDownloader
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -23,7 +22,8 @@ const val REDOWNLOAD_EXISTING = false
 //    val fetcher = XboxClipDownloader("iceburg33308")
 //    val fetcher = ESOWallpaperDownloader()
 //    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
-val fetcher = ImperialLibraryPictureDownloader()
+//val fetcher = ImperialLibraryPictureDownloader()
+val fetcher = StarfieldInaraDownloader()
 //val fetcher = UESPPictureDownloader("https://en.uesp.net/wiki/Shivering:Concept_Art")
 
 //    val fetcher = FiftyNineParksDownloader()
@@ -81,8 +81,7 @@ private fun crawlLocal(fetcher: AssetPageFetcher, useHtml: Boolean = true): Pair
 fun fetchData(url: String, headers: Map<String, String>): String {
     with(URL(url).openConnection()) {
         setRequestProperty(
-            "User-Agent",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+            "User-Agent", "curl/8.5.0"
         )
         headers.entries.forEach { (key, value) ->
             setRequestProperty(key, value)
@@ -120,16 +119,18 @@ private fun download(info: AssetInfo) {
         val data = if (download) fetchData(info.url, fetcher.getHeaders()) else file.readText()
         if (!file.exists()) File(info.fileName).writeText(data)
         info.additionalInfos.invoke(data).also { if (it.isNotEmpty()) println("Getting ${it.size} additional assets") }.forEach { download(it) }
-    } else if (download) downloadToFile(info)
+    } else if (download) downloadToFile(info, fetcher.getHeaders())
 }
 
-private fun downloadToFile(info: AssetInfo) {
+private fun downloadToFile(info: AssetInfo, headers: Map<String, String>) {
     with(URL(info.url).openConnection()) {
         try {
             setRequestProperty(
-                "User-Agent",
-                "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
+                "User-Agent", "curl/8.5.0"
             )
+            headers.entries.forEach { (key, value) ->
+                setRequestProperty(key, value)
+            }
             connect()
         } catch (e: Exception) {
             println("Failed to connect to ${info.url}")
