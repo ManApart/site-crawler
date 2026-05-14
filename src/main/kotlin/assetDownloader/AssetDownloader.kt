@@ -5,7 +5,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import java.io.File
-import java.net.URL
+import java.net.URI
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files.copy
 import java.nio.file.StandardCopyOption
@@ -17,6 +17,7 @@ const val CHUNK_SIZE = 10
 const val DOWNLOAD_FIRST_ONLY = false
 const val CRAWL_LOCAL = true
 const val REDOWNLOAD_EXISTING = false
+const val DOWNLOAD_AS_CURL = true
 
 //    val fetcher = XboxScreenShotDownloader("iceburg-33308")
 //    val fetcher = XboxClipDownloader("iceburg33308")
@@ -79,7 +80,7 @@ private fun crawlLocal(fetcher: AssetPageFetcher, useHtml: Boolean = true): Pair
 }
 
 fun fetchData(url: String, headers: Map<String, String>): String {
-    with(URL(url).openConnection()) {
+    with(URI.create(url).toURL().openConnection()) {
         setRequestProperty(
             "User-Agent", "curl/8.5.0"
         )
@@ -123,7 +124,12 @@ private fun download(info: AssetInfo) {
 }
 
 private fun downloadToFile(info: AssetInfo, headers: Map<String, String>) {
-    with(URL(info.url).openConnection()) {
+    if (DOWNLOAD_AS_CURL) downloadToFileCurl(info, headers) else downloadToFileKotlin(info, headers)
+}
+
+
+private fun downloadToFileKotlin(info: AssetInfo, headers: Map<String, String>) {
+        with(URI.create(info.url).toURL().openConnection()) {
         try {
             setRequestProperty(
                 "User-Agent", "curl/8.5.0"
@@ -144,4 +150,10 @@ private fun downloadToFile(info: AssetInfo, headers: Map<String, String>) {
             println(ex)
         }
     }
+}
+
+private fun downloadToFileCurl(info: AssetInfo, headers: Map<String, String>) {
+//    val cmd = """curl --fail "${info.url}" -o "${info.fileName}" """ + headers.entries.joinToString(" ") { "-H '${it.key}: ${it.value}'" }
+    val cmd = listOf("curl", "--fail", info.url, "-o", info.fileName) + headers.entries.flatMap { listOf("-H", "${it.key}: ${it.value}") }
+    File(".").runCommand(cmd)
 }
