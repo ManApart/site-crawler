@@ -2,22 +2,20 @@ package assetDownloader.downloaders
 
 import assetDownloader.AssetInfo
 import assetDownloader.AssetPageFetcher
-import assetDownloader.mapper
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.module.kotlin.readValue
-import org.jsoup.Jsoup
+import book.jsonMapper
+import kotlinx.serialization.Serializable
 
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Serializable
 private data class DownloadInfo(val data: List<PicDownload>)
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Serializable
 private data class PicDownload(val attributes: PicAttributes)
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Serializable
 private data class PicAttributes(val slug: String, val image: PicImage)
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Serializable
 private data class PicImage(val download_link: String)
 
 
@@ -42,7 +40,7 @@ class PexelsDownloader(private val query: String = "landscape", private val star
     }
 
     override fun getAssetInfos(url: String, pageData: String): List<AssetInfo> {
-        return mapper.readValue<DownloadInfo>(pageData).data.map { image ->
+        return jsonMapper.decodeFromString<DownloadInfo>(pageData).data.map { image ->
             AssetInfo(image.attributes.image.download_link, "./download/${image.attributes.slug}.jpg")
         }
     }

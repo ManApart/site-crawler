@@ -1,6 +1,8 @@
 
 plugins {
     kotlin("jvm") version "2.3.20"
+    kotlin("plugin.serialization") version "2.3.20"
+    application
 }
 
 group = "org.rak"
@@ -12,8 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation("org.jsoup:jsoup:1.20.1")
     implementation("nl.siegmann.epublib:epublib-core:3.1") {
         exclude("org.sl4j")

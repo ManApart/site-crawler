@@ -1,9 +1,5 @@
 package assetDownloader
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-
-val mapper = jacksonObjectMapper()
-
 interface AssetPageFetcher {
     fun baseUrl() : String
     fun hasNext(pageData: String) : Boolean
