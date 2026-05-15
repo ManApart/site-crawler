@@ -4,18 +4,17 @@ import nl.siegmann.epublib.domain.Author
 import nl.siegmann.epublib.domain.Book
 import nl.siegmann.epublib.domain.Resource
 import nl.siegmann.epublib.epub.EpubWriter
+import readConfig
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.collections.forEach
 
 //Post creation, import into calibre and reconvert to epub for reader to work
 fun main() {
-    val title = "Quantization from the ground up"
-    val author = ""
+    val config = readConfig().book
     val input = File("in/local.html")
-    input.writeText(htmlToXhtml(input.readText(), title))
+    input.writeText(htmlToXhtml(input.readText(), config.title))
 
-    createEpub(title, author, listOf(input))
+    createEpub(config.title, config.author, listOf(input))
 }
 
 

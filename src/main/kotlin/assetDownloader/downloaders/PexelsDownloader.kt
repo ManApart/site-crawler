@@ -2,7 +2,7 @@ package assetDownloader.downloaders
 
 import assetDownloader.AssetInfo
 import assetDownloader.AssetPageFetcher
-import book.jsonMapper
+import jsonMapper
 import kotlinx.serialization.Serializable
 
 

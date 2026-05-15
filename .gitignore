@@ -136,3 +136,4 @@ download/
 in/
 test.sh
 .kotlin
+config.json
