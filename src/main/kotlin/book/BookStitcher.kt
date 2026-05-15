@@ -25,7 +25,6 @@ const val FOOTER = "</body>\n" +
         "\n" +
         "</html>"
 
-
 fun main() {
     books.forEach { book ->
         crawl(book.siteUrl, book.pageFetcher, book.fileName, book.siteName)
@@ -95,20 +94,4 @@ private fun ensureEndsInHTML(fileName: String): String {
 
 fun wrapHtml(data: String): String {
     return "<!DOCTYPE html><html lang=en-US><body>$data</body></html>"
-}
-
-
-fun createEpub(title: String, author: String, chapters: List<File>, coverImageName: String? = null) {
-    val book = Book().apply {
-        metadata.addTitle(title)
-        metadata.addAuthor(Author(author))
-        if (coverImageName != null) {
-            coverImage = Resource(File("in/pictures/$coverImageName").inputStream(), coverImageName)
-        }
-        chapters.forEach { ch ->
-            addSection(ch.nameWithoutExtension.replace("_", " "), Resource(ch.inputStream(), ch.name))
-        }
-
-    }
-    EpubWriter().write(book, FileOutputStream("out/$title.epub"))
 }
