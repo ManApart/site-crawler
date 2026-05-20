@@ -24,6 +24,7 @@ class ImageByCssClassDownloader(private val url: String, private val selector: S
             .select(selector)
             .select("img")
             .map { it.attr("src") }
+            .toSet()
             .map {
                 AssetInfo(it, "./download/${it.cleanTitle()}")
             }
