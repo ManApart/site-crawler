@@ -1,6 +1,6 @@
 package assetDownloader
 
-import assetDownloader.downloaders.StarfieldInaraDownloader
+import assetDownloader.downloaders.ImageByCssClassDownloader
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -15,7 +15,7 @@ import java.util.Collections.emptyList
 const val MAX_DEPTH = 10
 const val CHUNK_SIZE = 10
 const val DOWNLOAD_FIRST_ONLY = false
-const val CRAWL_LOCAL = true
+const val CRAWL_LOCAL = false
 const val REDOWNLOAD_EXISTING = false
 const val DOWNLOAD_AS_CURL = true
 
@@ -24,8 +24,9 @@ const val DOWNLOAD_AS_CURL = true
 //    val fetcher = ESOWallpaperDownloader()
 //    val fetcher = WikiArtDownloader("https://www.wikiart.org/en/norman-rockwell/all-works/text-list")
 //val fetcher = ImperialLibraryPictureDownloader()
-val fetcher = StarfieldInaraDownloader()
+//val fetcher = StarfieldInaraDownloader()
 //val fetcher = UESPPictureDownloader("https://en.uesp.net/wiki/Shivering:Concept_Art")
+val fetcher = ImageByCssClassDownloader("https://steamcommunity.com/stats/1716740/achievements", ".achieveImgHolder")
 
 //    val fetcher = FiftyNineParksDownloader()
 //    val fetcher = ArtStationDownloader("https://www.artstation.com/nicatorshields", listOf("https://cdna.artstation.com/p/assets/images/", "https://cdnb.artstation.com/p/assets/images/"))
