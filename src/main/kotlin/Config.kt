@@ -11,13 +11,24 @@ val jsonMapper = Json {
 
 @Serializable
 data class MainConfig(
-    val book: BookConfig = BookConfig()
+    val book: BookConfig = BookConfig(),
+    val articles: List<ArticleConfig> = listOf(),
 )
 
 @Serializable
 data class BookConfig(
     val title: String = "",
     val author: String = "",
+)
+
+
+@Serializable
+data class ArticleConfig(
+    val siteName: String = "",
+    val cssFilter: String = "",
+    val links: List<String> = listOf(),
+    val author: String? = null,
+    val cover: String? = null,
 )
 
 fun readConfig(): MainConfig {

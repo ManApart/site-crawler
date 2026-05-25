@@ -1,14 +1,12 @@
 package book
 
-import book.books.articles
 import java.io.File
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.*
 
-//val books: List<BookInfo> = listOf(
-//)
-val books = articles
+val books: List<BookInfo> = listOf(
+)
 
 const val MAX_DEPTH = 100
 
@@ -21,14 +19,16 @@ const val FOOTER = "</body>\n" +
         "</html>"
 
 fun main() {
-    books.forEach { book ->
-        crawl(book.siteUrl, book.pageFetcher, book.fileName, book.siteName)
-        val baseName = book.siteName.filter { it.isLetter() }
-        val (numberedFiles, namedFiles) = File("./download/${baseName}").listFiles()!!.toList()
-            .partition { it.nameWithoutExtension.toIntOrNull() != null }
-        val chapters = namedFiles.sortedBy { it.nameWithoutExtension } + numberedFiles.sortedBy { it.nameWithoutExtension.toIntOrNull() }
-        createEpub(book.siteName, book.author ?: "NA", chapters, book.coverImageName)
-    }
+    books.process()
+}
+
+fun List<BookInfo>.process() = forEach { book ->
+    crawl(book.siteUrl, book.pageFetcher, book.fileName, book.siteName)
+    val baseName = book.siteName.filter { it.isLetter() }.trim()
+    val (numberedFiles, namedFiles) = File("./download/${baseName}").listFiles()!!.toList()
+        .partition { it.nameWithoutExtension.toIntOrNull() != null }
+    val chapters = namedFiles.sortedBy { it.nameWithoutExtension } + numberedFiles.sortedBy { it.nameWithoutExtension.toIntOrNull() }
+    createEpub(book.siteName.trim(), book.author ?: "NA", chapters, book.coverImageName)
 }
 
 fun crawl(
@@ -41,9 +41,10 @@ fun crawl(
     previousData: String = ""
 ) {
     val fileName = ensureEndsInHTML(fileNameBuilder(depth, url))
-    val baseName = siteName.filter { it.isLetter() }
+    val baseName = siteName.filter { it.isLetter() }.trim()
     val pathName = "./download/${baseName}/$fileName"
-    val data = fetchData(url).let { fetcher.contentFilter(url, it) }.let { htmlToXhtml(it, fileName.replace(".html", "")) }
+    val downloaded = File(pathName).also { it.parentFile.mkdirs() }
+    val data = fetchData(url, downloaded).let { fetcher.contentFilter(url, it) }.let { htmlToXhtml(it, fileName.replace(".html", "")) }
     saveData(pathName, data)
     pageList.add(fileName)
     if (fetcher.hasNext(data) && depth < MAX_DEPTH && data != previousData) {
@@ -53,7 +54,8 @@ fun crawl(
     }
 }
 
-fun fetchData(url: String): String {
+fun fetchData(url: String, downloaded: File? = null): String {
+    if (downloaded?.exists() == true) return downloaded.readText()
     Scanner(
         URL(url).openStream(),
         StandardCharsets.UTF_8.toString()
