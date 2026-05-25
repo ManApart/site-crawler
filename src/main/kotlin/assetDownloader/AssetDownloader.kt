@@ -26,7 +26,7 @@ const val DOWNLOAD_AS_CURL = false
 //val fetcher = ImperialLibraryPictureDownloader()
 //val fetcher = StarfieldInaraDownloader()
 //val fetcher = UESPPictureDownloader("https://en.uesp.net/wiki/Shivering:Concept_Art")
-val fetcher = SteamAchievementIconDownloader("https://steamcommunity.com/stats/1716740/achievements")
+val fetcher = SteamAchievementIconDownloader("https://steamcommunity.com/stats/2623190/achievements")
 //val fetcher = ImageByCssClassDownloader("https://steamcommunity.com/stats/1716740/achievements", ".achieveImgHolder")
 
 //    val fetcher = FiftyNineParksDownloader()

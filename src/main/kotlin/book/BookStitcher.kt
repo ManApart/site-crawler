@@ -1,19 +1,14 @@
 package book
 
-import book.books.article
-import nl.siegmann.epublib.domain.Author
-import nl.siegmann.epublib.domain.Book
-import nl.siegmann.epublib.domain.Resource
-import nl.siegmann.epublib.epub.EpubWriter
+import book.books.articles
 import java.io.File
-import java.io.FileOutputStream
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.*
 
-val books: List<BookInfo> = listOf(
-    article
-)
+//val books: List<BookInfo> = listOf(
+//)
+val books = articles
 
 const val MAX_DEPTH = 100
 
@@ -75,6 +70,8 @@ private fun saveData(fileName: String, data: String) {
 }
 
 private fun createIndexPage(siteName: String, pageList: List<String>) {
+    if (pageList.size == 1) return
+
     var indexData = HEADER
     pageList.forEach {
         indexData += "<a href=\"$it\">$it</a><br />\n"
