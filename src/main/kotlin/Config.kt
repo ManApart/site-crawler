@@ -13,12 +13,19 @@ val jsonMapper = Json {
 data class MainConfig(
     val book: BookConfig = BookConfig(),
     val articles: List<ArticleConfig> = listOf(),
+    val assetDownloader: AssetDownloaderConfig = AssetDownloaderConfig()
 )
 
 @Serializable
 data class BookConfig(
     val title: String = "",
     val author: String = "",
+)
+
+
+@Serializable
+data class AssetDownloaderConfig(
+    val pexelsApiKey: String = "",
 )
 
 
